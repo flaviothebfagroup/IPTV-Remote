@@ -1,524 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Control Panel</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #fff;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: fadeInDown 0.5s ease;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .subtitle {
-            opacity: 0.9;
-            font-size: 16px;
-        }
-
-        .display-selector {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: fadeInUp 0.5s ease 0.1s both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .display-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .display-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .display-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        .display-btn.active {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: #43e97b;
-            box-shadow: 0 0 20px rgba(67, 233, 123, 0.3);
-        }
-
-        .display-id {
-            display: block;
-            font-size: 12px;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        .channel-controls {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: fadeInUp 0.5s ease 0.2s both;
-        }
-
-        .channel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .channel-btn {
-            aspect-ratio: 1;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .channel-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .channel-btn:hover::before {
-            opacity: 1;
-        }
-
-        .channel-btn:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-        }
-
-        .channel-btn:active {
-            transform: translateY(-2px) scale(1.02);
-        }
-
-        .channel-number {
-            font-size: 36px;
-            margin-bottom: 5px;
-        }
-
-        .channel-name {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        /* Channel specific colors */
-        .channel-btn[data-channel="1"] { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .channel-btn[data-channel="2"] { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .channel-btn[data-channel="3"] { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-        .channel-btn[data-channel="4"] { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-        .channel-btn[data-channel="5"] { background: linear-gradient(135deg, #fa709a, #fee140); }
-
-        .status {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            text-align: center;
-            font-size: 14px;
-            animation: fadeInUp 0.5s ease 0.3s both;
-        }
-
-        .status.success {
-            background: rgba(67, 233, 123, 0.2);
-            border: 1px solid rgba(67, 233, 123, 0.5);
-        }
-
-        .status.error {
-            background: rgba(245, 87, 108, 0.2);
-            border: 1px solid rgba(245, 87, 108, 0.5);
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            vertical-align: middle;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .current-status {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .add-display-btn {
-            background: rgba(67, 233, 123, 0.2);
-            border: 2px dashed rgba(67, 233, 123, 0.5);
-            color: #43e97b;
-            padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .add-display-btn:hover {
-            background: rgba(67, 233, 123, 0.3);
-        }
-
-        .setup-notice {
-            background: rgba(255, 193, 7, 0.2);
-            border: 1px solid rgba(255, 193, 7, 0.5);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            animation: fadeInUp 0.5s ease;
-        }
-
-        .setup-notice strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        /* Mobile responsive */
-        @media (max-width: 480px) {
-            .channel-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .display-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>BFA IPTV — Remote</title>
+<link rel="manifest" href="/IPTV-/manifest.webmanifest"/><meta name="theme-color" content="#000000"/>
+<link rel="icon" type="image/png" sizes="192x192" href="/IPTV-/icons/icon-192.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="/IPTV-/icons/icon-512.png"/><link rel="apple-touch-icon" href="/IPTV-/icons/icon-192.png"/>
+<style>
+:root{--bg:#0b0b0c;--fg:#fff;--muted:#9a9aa0;--panel:#121214;--border:rgba(255,255,255,.14);--tile:#17171a;--accent:#ff9500}
+body.light{--bg:#f5f5f7;--fg:#111;--muted:#6e6e73;--panel:#fff;--border:rgba(0,0,0,.12);--tile:#f2f2f7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:linear-gradient(0deg,transparent,rgba(0,0,0,.06));backdrop-filter:blur(10px)}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--tile) center/cover no-repeat;border:1px solid var(--border)}
+a.nav{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:var(--tile);text-decoration:none;color:inherit}
+.btn{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:var(--tile);color:var(--fg);font-weight:800;cursor:pointer}
+.btn.primary{border-color:var(--accent);color:var(--accent);background:transparent}
+.wrap{max-width:680px;margin:0 auto;padding:18px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px}
+.small{font-size:12px}.muted{color:var(--muted)}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 16px;border-radius:999px;font-weight:900;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}.toast.err{background:#ff453a;color:#fff}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📺 IPTV Control</h1>
-            <p class="subtitle">Remote Channel Controller</p>
-        </div>
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div id="brandLogo" class="logo"></div>
+    <b>BFA IPTV — Remote</b>
+    <a class="nav" href="home.html">Home</a>
+    <a class="nav" href="dealership.html">Dealerships</a>
+    <a class="nav" href="display.html">Displays</a>
+    <a class="nav" href="user.html">Users</a>
+    <a class="nav" href="more.html">More</a>
+    <a class="nav" href="remote-control.html">Remote</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button id="themeBtn" class="btn">☀︎/🌙</button>
+  </div>
+</div>
 
-        <div class="setup-notice">
-            <strong>⚡ Quick Setup:</strong>
-            Click on a display below, then select a channel to change it instantly!
-        </div>
-
-        <!-- Display Selector -->
-        <div class="display-selector">
-            <div class="section-title">📺 Select Display</div>
-            <div class="display-grid" id="displayGrid">
-                <button class="display-btn active" onclick="selectDisplay('DISPLAY-001', this)">
-                    <span>Showroom</span>
-                    <span class="display-id">DISPLAY-001</span>
-                </button>
-                <button class="display-btn" onclick="selectDisplay('DISPLAY-002', this)">
-                    <span>Waiting Area</span>
-                    <span class="display-id">DISPLAY-002</span>
-                </button>
-                <button class="display-btn" onclick="selectDisplay('DISPLAY-003', this)">
-                    <span>Service</span>
-                    <span class="display-id">DISPLAY-003</span>
-                </button>
-                <button class="add-display-btn" onclick="addDisplay()">
-                    + Add Display
-                </button>
-            </div>
-            <div class="current-status">
-                <span>Selected: <strong id="currentDisplay">DISPLAY-001</strong></span>
-                <span>Channel: <strong id="currentChannel">1</strong></span>
-            </div>
-        </div>
-
-        <!-- Channel Controls -->
-        <div class="channel-controls">
-            <div class="section-title">📡 Select Channel</div>
-            <div class="channel-grid">
-                <button class="channel-btn" data-channel="1" onclick="changeChannel(1)">
-                    <span class="channel-number">1</span>
-                    <span class="channel-name">News</span>
-                </button>
-                <button class="channel-btn" data-channel="2" onclick="changeChannel(2)">
-                    <span class="channel-number">2</span>
-                    <span class="channel-name">Sports</span>
-                </button>
-                <button class="channel-btn" data-channel="3" onclick="changeChannel(3)">
-                    <span class="channel-number">3</span>
-                    <span class="channel-name">Cooking</span>
-                </button>
-                <button class="channel-btn" data-channel="4" onclick="changeChannel(4)">
-                    <span class="channel-number">4</span>
-                    <span class="channel-name">Nature</span>
-                </button>
-                <button class="channel-btn" data-channel="5" onclick="changeChannel(5)">
-                    <span class="channel-number">5</span>
-                    <span class="channel-name">Kids</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Status Messages -->
-        <div id="status" class="status" style="display: none;"></div>
+<div class="wrap">
+  <div class="card">
+    <h2 style="margin:0 0 8px">Control a display</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <select id="dealerSel" class="btn"><option value="">Select dealership…</option></select>
+      <select id="dispSel" class="btn"><option value="">Select display…</option></select>
     </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn" data-ch="1">CH1</button><button class="btn" data-ch="2">CH2</button><button class="btn" data-ch="3">CH3</button><button class="btn" data-ch="4">CH4</button><button class="btn" data-ch="5">CH5</button>
+      <label class="small muted">VOL <input id="vol" type="range" min="0" max="100" value="0" style="width:180px"></label>
+      <button id="toggleMute" class="btn">Mute/Unmute</button>
+    </div>
+  </div>
+</div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+<div id="toast" class="toast"></div>
 
-        // ===============================================
-        // YOUR FIREBASE CONFIGURATION
-        // ===============================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyBLSRS9PELXoI0wRafYKG5tx_UoRSawQaY",
-            authDomain: "iptv-bfa.firebaseapp.com",
-            databaseURL: "https://iptv-bfa-default-rtdb.firebaseio.com",
-            projectId: "iptv-bfa",
-            storageBucket: "iptv-bfa.firebasestorage.app",
-            messagingSenderId: "838790935867",
-            appId: "1:838790935867:web:1860eac7dbeb7159e1b31e",
-            measurementId: "G-CV5Y0BRYRF"
-        };
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+const firebaseConfig={apiKey:"AIzaSyBLSRS9PELXoI0wRafYKG5tx_UoRSawQaY",authDomain:"iptv-bfa.firebaseapp.com",databaseURL:"https://iptv-bfa-default-rtdb.firebaseio.com",projectId:"iptv-bfa",storageBucket:"iptv-bfa.firebasestorage.app",messagingSenderId:"838790935867",appId:"1:838790935867:web:1860eac7dbeb7159e1b31e"};
+const LOGO_URL="https://flaviothebfagroup.github.io/IPTV-/icons/icon-512.png";
+const app=initializeApp(firebaseConfig); const db=getDatabase(app);
+const $=s=>document.querySelector(s); function toast(m,e=false){const t=$('#toast');t.textContent=m;t.className='toast show'+(e?' err':'');setTimeout(()=>t.classList.remove('show'),2200);}
+$('#brandLogo').style.backgroundImage=`url("${LOGO_URL}")`;
+let savedTheme=localStorage.getItem('iptv_theme'); if(!savedTheme){savedTheme='light';localStorage.setItem('iptv_theme','light');}
+document.body.classList.toggle('light', savedTheme==='light'); $('#themeBtn').addEventListener('click',()=>{const isLight=!document.body.classList.contains('light');document.body.classList.toggle('light',isLight);localStorage.setItem('iptv_theme',isLight?'light':'dark');});
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+async function loadDealers(){ const sel=$('#dealerSel'); sel.innerHTML='<option value="">Select dealership…</option>'; const p=await get(ref(db,'dealershipPublic')); const map=p.val()||{}; Object.entries(map).sort((a,b)=>(a[1]?.name||a[0]).localeCompare(b[1]?.name||b[0])).forEach(([id,v])=>{ const o=document.createElement('option'); o.value=id; o.textContent=v?.name||id; sel.appendChild(o); }); }
+async function loadDisplays(did){ const sel=$('#dispSel'); sel.innerHTML='<option value="">Select display…</option>'; if(!did) return; const d=await get(ref(db,`dealership/${did}/displays`)); const ids=d.exists()?Object.keys(d.val()||{}):[]; ids.sort().forEach(id=>{ const o=document.createElement('option'); o.value=id; o.textContent=id; sel.appendChild(o); }); }
+$('#dealerSel').addEventListener('change',e=>{ loadDisplays(e.target.value); localStorage.setItem('iptv_sel_dealer', e.target.value||'');});
+$('#dispSel').addEventListener('change',()=>localStorage.setItem('iptv_sel_display',$('#dispSel').value||''));
+document.querySelectorAll('button[data-ch]').forEach(b=>b.addEventListener('click',()=>send({channel:parseInt(b.dataset.ch,10)})));
+$('#vol').addEventListener('change',e=>send({volume:parseInt(e.target.value,10)}));
+$('#toggleMute').addEventListener('click',async()=>{ const d=getSel(); if(!d) return; const s=await get(ref(db,`displays/${d.id}`)); const cur=!!(s.val()?.muted); send({muted:!cur}); });
 
-        // Global variables
-        let currentDisplayId = 'DISPLAY-001';
-        let displays = ['DISPLAY-001', 'DISPLAY-002', 'DISPLAY-003'];
+function getSel(){ const dealership=$('#dealerSel').value, id=$('#dispSel').value; if(!dealership||!id){ toast('Pick dealership & display',true); return null; } return {dealership,id}; }
+async function send(patch){ const d=getSel(); if(!d) return; await update(ref(db,`displays/${d.id}`),{...patch,dealership:d.dealership,timestamp:Date.now()}); toast('Sent'); }
 
-        // Make functions available globally
-        window.selectDisplay = function(displayId, button) {
-            currentDisplayId = displayId;
-            document.getElementById('currentDisplay').textContent = displayId;
-            
-            // Update button states
-            document.querySelectorAll('.display-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            if (button && button.classList.contains('display-btn')) {
-                button.classList.add('active');
-            }
-            
-            // Get current channel for this display
-            const displayRef = ref(database, `displays/${displayId}`);
-            get(displayRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    document.getElementById('currentChannel').textContent = data.channel || 1;
-                } else {
-                    // Initialize display if it doesn't exist
-                    set(displayRef, {
-                        channel: 1,
-                        timestamp: Date.now(),
-                        displayId: displayId
-                    });
-                    document.getElementById('currentChannel').textContent = 1;
-                }
-            }).catch((error) => {
-                console.error('Error fetching display data:', error);
-            });
-            
-            showStatus('Display selected: ' + displayId, 'success');
-        }
-
-        window.changeChannel = function(channelNumber) {
-            showStatus('Changing channel...<span class="loading"></span>', 'success');
-            
-            // Update Firebase
-            const displayRef = ref(database, `displays/${currentDisplayId}`);
-            set(displayRef, {
-                channel: channelNumber,
-                timestamp: Date.now(),
-                displayId: currentDisplayId
-            }).then(() => {
-                document.getElementById('currentChannel').textContent = channelNumber;
-                showStatus(`✅ Channel ${channelNumber} set for ${currentDisplayId}`, 'success');
-            }).catch((error) => {
-                showStatus('❌ Error: ' + error.message, 'error');
-                console.error('Error setting channel:', error);
-            });
-        }
-
-        window.addDisplay = function() {
-            const newId = prompt('Enter Display ID (e.g., DISPLAY-004):');
-            if (newId && !displays.includes(newId)) {
-                const newName = prompt('Enter Display Name (e.g., Conference Room):') || newId;
-                
-                displays.push(newId);
-                const grid = document.getElementById('displayGrid');
-                const newBtn = document.createElement('button');
-                newBtn.className = 'display-btn';
-                newBtn.innerHTML = `
-                    <span>${newName}</span>
-                    <span class="display-id">${newId}</span>
-                `;
-                newBtn.onclick = () => selectDisplay(newId, newBtn);
-                grid.insertBefore(newBtn, grid.lastElementChild);
-                
-                // Initialize in Firebase
-                const displayRef = ref(database, `displays/${newId}`);
-                set(displayRef, {
-                    channel: 1,
-                    timestamp: Date.now(),
-                    displayId: newId,
-                    name: newName
-                }).then(() => {
-                    showStatus(`Display ${newId} added successfully!`, 'success');
-                }).catch((error) => {
-                    showStatus('Error adding display: ' + error.message, 'error');
-                });
-            } else if (displays.includes(newId)) {
-                showStatus('Display ID already exists!', 'error');
-            }
-        }
-
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.innerHTML = message;
-            status.className = 'status ' + type;
-            status.style.display = 'block';
-            
-            if (!message.includes('loading')) {
-                setTimeout(() => {
-                    status.style.display = 'none';
-                }, 3000);
-            }
-        }
-
-        // Listen for real-time updates (shows what's happening)
-        function setupRealtimeListeners() {
-            displays.forEach(displayId => {
-                const displayRef = ref(database, `displays/${displayId}`);
-                onValue(displayRef, (snapshot) => {
-                    if (snapshot.exists() && displayId === currentDisplayId) {
-                        const data = snapshot.val();
-                        document.getElementById('currentChannel').textContent = data.channel || 1;
-                    }
-                }, (error) => {
-                    console.error('Realtime update error:', error);
-                });
-            });
-        }
-
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('Control panel initialized');
-            selectDisplay('DISPLAY-001', document.querySelector('.display-btn'));
-            setupRealtimeListeners();
-            
-            // Initialize all displays in Firebase
-            displays.forEach(displayId => {
-                const displayRef = ref(database, `displays/${displayId}`);
-                get(displayRef).then((snapshot) => {
-                    if (!snapshot.exists()) {
-                        set(displayRef, {
-                            channel: 1,
-                            timestamp: Date.now(),
-                            displayId: displayId
-                        });
-                    }
-                });
-            });
-        });
-
-        // Log Firebase connection
-        console.log('Firebase connected to:', firebaseConfig.databaseURL);
-    </script>
+(async ()=>{ await loadDealers(); const last=localStorage.getItem('iptv_sel_dealer')||''; if(last){ $('#dealerSel').value=last; await loadDisplays(last); const ld=localStorage.getItem('iptv_sel_display')||''; if(ld) $('#dispSel').value=ld; }})();
+</script>
 </body>
 </html>
