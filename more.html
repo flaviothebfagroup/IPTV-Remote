@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>BFA IPTV — More</title>
+<link rel="manifest" href="/IPTV-/manifest.webmanifest"/><meta name="theme-color" content="#000000"/>
+<link rel="icon" type="image/png" sizes="192x192" href="/IPTV-/icons/icon-192.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="/IPTV-/icons/icon-512.png"/><link rel="apple-touch-icon" href="/IPTV-/icons/icon-192.png"/>
+<style>
+:root{--bg:#0b0b0c;--fg:#fff;--muted:#9a9aa0;--panel:#121214;--border:rgba(255,255,255,.14);--tile:#17171a;--tileA:#1d1d21;--accent:#ff9500}
+body.light{--bg:#f5f5f7;--fg:#111;--muted:#6e6e73;--panel:#fff;--border:rgba(0,0,0,.12);--tile:#f2f2f7;--tileA:#eaeaef}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:linear-gradient(0deg,transparent,rgba(0,0,0,.06));backdrop-filter:blur(10px)}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--tile) center/cover no-repeat;border:1px solid var(--border)}
+a.nav{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:var(--tile);text-decoration:none;color:inherit}
+.btn{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:var(--tile);color:var(--fg);font-weight:800;cursor:pointer}
+.btn.primary{border-color:var(--accent);color:var(--accent);background:transparent}
+.btn.solid{padding:10px 14px;border-radius:12px;background:var(--accent);border:0;color:#000;font-weight:900}
+.wrap{max-width:1200px;margin:0 auto;padding:18px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px}
+.list{list-style:none;margin:10px 0 0;padding:0}.item{display:flex;justify-content:space-between;gap:12px;padding:12px;margin:8px 0;background:var(--tile);border:1px solid var(--border);border-radius:12px;flex-wrap:wrap}
+.small{font-size:12px}.muted{color:var(--muted)}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 16px;border-radius:999px;font-weight:900;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}.toast.err{background:#ff453a;color:#fff}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div id="brandLogo" class="logo"></div>
+    <b>BFA IPTV — Admin</b>
+    <a class="nav" href="home.html">Home</a>
+    <a class="nav" href="dealership.html">Dealerships</a>
+    <a class="nav" href="display.html">Displays</a>
+    <a class="nav" href="user.html">Users</a>
+    <a class="nav" href="more.html">More</a>
+    <a class="nav" href="remote-control.html">Remote</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span id="adminEmail" class="muted small"></span>
+    <button id="themeBtn" class="btn">☀︎/🌙</button>
+    <button id="syncBtn" class="btn primary">Sync → GitHub</button>
+    <button id="settingsBtn" class="btn primary">Settings</button>
+    <button id="signOutBtn" class="btn primary">Sign out</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="loginBox" class="card" style="max-width:520px;margin:40px auto;display:none">
+    <h2 style="margin:0 0 12px">Admin Sign In</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><div class="small muted">Email</div><input id="email" class="btn" style="width:100%" type="email"/></div>
+      <div><div class="small muted">Password</div><input id="password" class="btn" style="width:100%" type="password"/></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button id="loginBtn" class="btn" style="flex:1">Sign in</button>
+      <button id="resetBtn" class="btn" style="flex:1">Reset link</button>
+    </div>
+  </div>
+
+  <div id="content" style="display:none">
+    <div id="analytics" class="card">
+      <h2 id="analyticsHeading" style="margin:0 0 8px">Analytics</h2>
+      <div id="anaSummary" class="small muted">Loading…</div>
+      <div id="anaChannels"></div>
+      <div id="anaDealers" style="margin-top:8px"></div>
+    </div>
+
+    <div id="schedule" class="card" style="margin-top:12px">
+      <h2 style="margin:0 0 8px">Schedule / Reminders (local)</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <input id="schWhen" class="btn" type="datetime-local"/>
+        <input id="schDest" class="btn" placeholder="Destination / address (optional)"/>
+        <input id="schNote" class="btn" placeholder="Installation / visit / reminder…"/>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <label class="small" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="schCreateAssets"/> Create assets now (dealership + display)</label>
+        <button id="schAdd" class="btn solid">Add</button>
+      </div>
+      <div id="schAssets" style="display:none;margin-top:8px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <input id="schDealerName" class="btn" placeholder="Dealership name"/>
+          <input id="schDealerId" class="btn" placeholder="Dealership ID (auto if empty)"/>
+          <input id="schDisplayId" class="btn" placeholder="Display ID (auto if empty)"/>
+        </div>
+      </div>
+      <ul id="schList" class="list"></ul>
+      <div id="schEmpty" class="small muted" style="display:none">No reminders.</div>
+    </div>
+
+    <div id="backups" class="card" style="margin-top:12px">
+      <h2 style="margin:0 0 8px">Backups</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button id="btnDownloadBackup" class="btn solid">Download backup (JSON)</button>
+        <input id="fileRestore" type="file" accept="application/json" class="btn"/>
+        <button id="btnPreviewRestore" class="btn">Preview restore</button>
+      </div>
+      <div id="restorePreview" class="card" style="display:none;margin-top:8px">
+        <h3 style="margin:0 0 8px">Restore preview</h3>
+        <div id="restoreDiff"></div>
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button id="btnApplyRestore" class="btn solid">Apply changes</button>
+          <button id="btnCancelRestore" class="btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="links" class="card" style="margin-top:12px">
+      <h2 style="margin:0 0 8px">Quick Links</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <input id="qlTitle" class="btn" placeholder="Title"/>
+        <input id="qlHref" class="btn" placeholder="https://..."/>
+        <input id="qlDesc" class="btn" placeholder="Description (optional)"/>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+        <input id="qlEmoji" class="btn" placeholder="🔥 ✅ 📁 … (optional)"/>
+        <input id="qlImg" class="btn" placeholder="Logo URL (optional)"/>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button id="qlAddBtn" class="btn solid">Add Link</button>
+        <button id="qlResetBtn" class="btn">Reset defaults</button>
+      </div>
+      <div id="appsGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px"></div>
+      <div class="small muted" id="qlStorageNote">Loading…</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- Settings dialog -->
+<dialog id="settingsDlg" style="border:0;padding:0;border-radius:18px;max-width:720px;width:96vw">
+  <form method="dialog" class="card" style="margin:0">
+    <h2>Settings</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><div class="small muted">GitHub Owner</div><input id="ghOwner" class="btn" placeholder="org-or-user"/></div>
+      <div><div class="small muted">Repo</div><input id="ghRepo" class="btn" placeholder="repo"/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px">
+      <div><div class="small muted">Branch</div><input id="ghBranch" class="btn" placeholder="main"/></div>
+      <div><div class="small muted">Path</div><input id="ghPath" class="btn" placeholder="config/iptv-config.json"/></div>
+      <div><div class="small muted">Token</div><input id="ghToken" class="btn" type="password" placeholder="fine-grained token (contents:write)"/></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button class="btn" value="cancel">Close</button>
+      <button id="saveSettingsBtn" class="btn solid" value="default">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+const firebaseConfig={apiKey:"AIzaSyBLSRS9PELXoI0wRafYKG5tx_UoRSawQaY",authDomain:"iptv-bfa.firebaseapp.com",databaseURL:"https://iptv-bfa-default-rtdb.firebaseio.com",projectId:"iptv-bfa",storageBucket:"iptv-bfa.firebasestorage.app",messagingSenderId:"838790935867",appId:"1:838790935867:web:1860eac7dbeb7159e1b31e"};
+const LOGO_URL="https://flaviothebfagroup.github.io/IPTV-/icons/icon-512.png";
+const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getDatabase(app);
+const $=s=>document.querySelector(s); function toast(m,e=false){const t=$('#toast');t.textContent=m;t.className='toast show'+(e?' err':'');setTimeout(()=>t.classList.remove('show'),2200);}
+function htmlEscape(s){return String(s).replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+$('#brandLogo').style.backgroundImage=`url("${LOGO_URL}")`;
+let savedTheme=localStorage.getItem('iptv_theme'); if(!savedTheme){savedTheme='light';localStorage.setItem('iptv_theme','light');}
+document.body.classList.toggle('light', savedTheme==='light'); $('#themeBtn').addEventListener('click',()=>{const isLight=!document.body.classList.contains('light');document.body.classList.toggle('light',isLight);localStorage.setItem('iptv_theme',isLight?'light':'dark');});
+$('#signOutBtn').addEventListener('click',()=>signOut(auth));
+$('#loginBtn').addEventListener('click',async()=>{const email=$('#email').value.trim(),pass=$('#password').value;if(!email||!pass)return toast('Fill email & password',true);try{await setPersistence(auth,browserLocalPersistence);await signInWithEmailAndPassword(auth,email,pass);}catch(e){toast('Sign-in failed',true);}});
+$('#resetBtn').addEventListener('click',async()=>{const email=$('#email').value.trim();if(!email)return toast('Enter email',true);try{await sendPasswordResetEmail(auth,email);toast('Reset sent');}catch(e){toast('Reset failed',true);}});
+
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ $('#loginBox').style.display='block'; return; }
+  $('#loginBox').style.display='none'; $('#content').style.display='block';
+  $('#adminEmail').textContent=user.email||user.uid;
+  loadAnalytics();
+  quickLinksLoadRender();
+  renderSchedule();
+});
+
+/* ===== Analytics ===== */
+function bar(label,val,total){const pct=total?Math.round((val/total)*100):0;const row=document.createElement('div');row.className='item';row.innerHTML=`<div><b>${htmlEscape(label)}</b><div class="small muted"><div style="height:10px;background:var(--tileA);border:1px solid var(--border);border-radius:999px;overflow:hidden"><i style="display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffb866);width:${pct}%"></i></div></div></div><div class="small muted">${val} • ${pct}%</div>`;return row;}
+async function loadAnalytics(){
+  const s=await get(ref(db,'displays')); const m=s.val()||{}; const ids=Object.keys(m); const now=Date.now();
+  let online=0, offline=0, volSum=0, volN=0, muted=0; const ch={}, dealers={};
+  ids.forEach(id=>{ const v=m[id]||{}; const on=(v.lastSeenAt&&(now-v.lastSeenAt)<60000)||(v.timestamp&&(now-v.timestamp)<120000); on?online++:offline++; const c=v.channel||1; ch[c]=(ch[c]||0)+1; const d=v.dealership||'—'; dealers[d]=(dealers[d]||0)+1; if(typeof v.volume==='number'){volSum+=v.volume;volN++;} if(v.muted===true) muted++; });
+  const avg=volN?Math.round(volSum/volN):0; const mutedPct=ids.length?Math.round((muted/ids.length)*100):0; const topCh=Object.entries(ch).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
+  $('#anaSummary').textContent=`Active now: ${online} • Offline: ${offline} • Total: ${ids.length} • Top CH: ${topCh} • Avg VOL: ${avg} • Muted: ${mutedPct}%`;
+  const chWrap=$('#anaChannels'); chWrap.innerHTML=''; const totalCh=Object.values(ch).reduce((a,b)=>a+b,0); Object.entries(ch).sort((a,b)=>a[0]-b[0]).forEach(([c,n])=>chWrap.appendChild(bar('Channel '+c,n,totalCh)));
+  const dWrap=$('#anaDealers'); dWrap.innerHTML=''; const totalD=Object.values(dealers).reduce((a,b)=>a+b,0); Object.entries(dealers).sort((a,b)=>b[1]-a[1]).slice(0,10).forEach(([d,n])=>dWrap.appendChild(bar(d,n,totalD)));
+}
+
+/* ===== Schedule (local + optional asset creation) ===== */
+const LS_SCH='iptv_admin_schedule'; const schedule=JSON.parse(localStorage.getItem(LS_SCH)||'[]');
+$('#schCreateAssets').addEventListener('change',e=>{$('#schAssets').style.display=e.target.checked?'block':'none';});
+function saveSchedule(){ localStorage.setItem(LS_SCH, JSON.stringify(schedule)); renderSchedule(); }
+function renderSchedule(){ const ul=$('#schList'); ul.innerHTML=''; if(!schedule.length){$('#schEmpty').style.display='block';return;} $('#schEmpty').style.display='none';
+  schedule.sort((a,b)=>a.when.localeCompare(b.when)); schedule.forEach((r,i)=>{ const li=document.createElement('li'); li.className='item'; li.innerHTML=`<div><b>${new Date(r.when).toLocaleString()}</b><div class="small muted">${htmlEscape(r.note||'')}</div>${r.dest?`<div class="small muted">📍 ${htmlEscape(r.dest)}</div>`:''}${r.assets?`<div class="small muted">Assets: ${htmlEscape(r.assets)}</div>`:''}</div><button class="btn" data-del="${i}" style="border-color:#ff6b6b;color:#ff6b6b">Delete</button>`; ul.appendChild(li);}); ul.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ const i=parseInt(b.dataset.del,10); schedule.splice(i,1); saveSchedule(); }));}
+function initialsFromName(name){const raw=(name||'').trim(); if(!raw) return 'DS'; let parts=raw.match(/[A-ZÀ-ÖØ-Ý][a-zà-öø-ÿ]*/g)||raw.match(/[A-Za-zÀ-ÖØ-öø-ÿ]+/g)||[]; let a=parts[0]||'', b=parts[1]||''; let p=(a? a[0]:'')+(b? b[0]:''); if(p.length<2 && a.length>=2) p=a.slice(0,2); return p.toUpperCase();}
+function nextSuffix(list,pref){let max=0;list.forEach(id=>{const m=id.match(new RegExp('^'+pref+'-(\\d{3})$'));if(m){const n=parseInt(m[1],10);if(n>max)max=n;}});return max+1;}
+function makeDealerId(name){const base=(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,24);return base||('dealer_'+Date.now());}
+async function collectDisplays(db, did){ const s=await get(ref(db,`dealership/${did}/displays`)); return s.exists()?Object.keys(s.val()||{}):[]; }
+
+$('#schAdd').addEventListener('click', async ()=>{
+  const when=$('#schWhen').value, note=$('#schNote').value.trim(), dest=$('#schDest').value.trim(), make=$('#schCreateAssets').checked;
+  if(!when||!note) return toast('Pick date/time and note',true);
+  let assets=''; if(make){
+    let dName=$('#schDealerName').value.trim(), dId=$('#schDealerId').value.trim(), disId=$('#schDisplayId').value.trim();
+    if(!dName && !dId) return toast('Enter dealership name or id',true);
+    if(!dId) dId=makeDealerId(dName||('dealer_'+Date.now()));
+    const exists=await get(ref(db,`dealershipPublic/${dId}`));
+    if(!exists.exists()){ await set(ref(db,`dealershipPublic/${dId}`),{name:dName||dId}); await set(ref(db,`dealership/${dId}`),{name:dName||dId,createdAt:Date.now(),createdBy:auth.currentUser?.email||'admin',displays:{}}); }
+    if(!disId){ const friendly=(await get(ref(db,`dealershipPublic/${dId}`))).val()?.name||dId; const pref=initialsFromName(friendly); const list=await collectDisplays(db,dId); const n=nextSuffix(list,pref); disId=`${pref}-${String(n).padStart(3,'0')}`; }
+    await set(ref(db,`dealership/${dId}/displays/${disId}`),true); await update(ref(db,`displays/${disId}`),{channel:1,volume:0,muted:true,dealership:dId,timestamp:Date.now()});
+    assets=`${dId} • ${disId}`; $('#schDealerName').value=''; $('#schDealerId').value=''; $('#schDisplayId').value='';
+  }
+  schedule.push({when,note,dest,assets}); saveSchedule(); $('#schWhen').value=''; $('#schNote').value=''; $('#schDest').value=''; $('#schCreateAssets').checked=false; $('#schAssets').style.display='none'; toast('Scheduled');
+});
+
+/* ===== Backups & GitHub sync helpers ===== */
+function download(filename,text){const a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(text); a.download=filename; a.click();}
+function compactUsers(u){const out={}; Object.entries(u||{}).forEach(([uid,v])=>{ out[uid]={email:v.email||null,name:v.name||null,role:v.role||'user',dealershipId:v.dealershipId||null};}); return out;}
+async function snapshot(){ const [dp,ds,us]=await Promise.all([get(ref(db,'dealershipPublic')).catch(()=>({val:()=>null})),get(ref(db,'displays')).catch(()=>({val:()=>null})),get(ref(db,'user')).catch(()=>({val:()=>null}))]); return {meta:{generatedAt:new Date().toISOString(),by:auth.currentUser?.email||'admin',format:'iptv-bfa@1'},dealersPublic:dp?.val?.()||{},displays:ds?.val?.()||{},users:compactUsers(us?.val?.()||{})}; }
+$('#btnDownloadBackup').addEventListener('click', async ()=>{ const snap=await snapshot(); download('iptv-backup.json', JSON.stringify(snap,null,2)); });
+
+let restoreData=null;
+$('#btnPreviewRestore').addEventListener('click', async ()=>{
+  const f=$('#fileRestore').files?.[0]; if(!f) return toast('Pick a JSON',true);
+  try{ restoreData=JSON.parse(await f.text()); }catch(_){ return toast('Invalid JSON',true); }
+  const live=await snapshot(); const diff={add:[],update:[],remove:[]};
+  function diffMap(title,cur,next){ const keys=new Set([...Object.keys(cur||{}),...Object.keys(next||{})]); keys.forEach(k=>{ const a=cur?.[k], b=next?.[k]; if(a==null&&b!=null) diff.add.push(`${title}: + ${k}`); else if(a!=null&&b==null) diff.remove.push(`${title}: - ${k}`); else if(JSON.stringify(a)!==JSON.stringify(b)) diff.update.push(`${title}: ~ ${k}`); }); }
+  diffMap('dealersPublic',live.dealersPublic,restoreData.dealersPublic);
+  diffMap('displays',live.displays,restoreData.displays);
+  diffMap('users',live.users,restoreData.users);
+  const box=$('#restoreDiff'); box.innerHTML='';
+  for(const k of ['add','update','remove']){ const d=document.createElement('div'); d.className='item'; d.innerHTML=`<b>${k}</b><div class="small muted">${diff[k].length?diff[k].join('<br/>'):'—'}</div>`; box.appendChild(d); }
+  $('#restorePreview').style.display='block';
+});
+$('#btnCancelRestore').addEventListener('click',()=>{$('#restorePreview').style.display='none'; restoreData=null;});
+$('#btnApplyRestore').addEventListener('click', async ()=>{
+  if(!restoreData) return;
+  if(!confirm('Apply these changes? This will overwrite matching keys.')) return;
+  try{
+    await set(ref(db,'dealershipPublic'), restoreData.dealersPublic||{});
+    await set(ref(db,'displays'), restoreData.displays||{});
+    const live=(await get(ref(db,'user'))).val()||{}; const merged={...live}; Object.entries(restoreData.users||{}).forEach(([uid,u])=>{ merged[uid]={...(merged[uid]||{}),...u}; });
+    await set(ref(db,'user'), merged);
+    toast('Restore complete'); $('#restorePreview').style.display='none';
+  }catch(e){ toast('Restore failed',true); }
+});
+
+/* ===== Links ===== */
+const DEFAULT_LINKS=[
+  { emoji:'🔥', title:'Firebase — Overview', href:'https://console.firebase.google.com/project/iptv-bfa/overview', desc:'Console home' },
+  { emoji:'🗄️', title:'Firebase — Database', href:'https://console.firebase.google.com/project/iptv-bfa/database/iptv-bfa-default-rtdb/data', desc:'Realtime DB' },
+  { emoji:'👤', title:'Firebase — Auth', href:'https://console.firebase.google.com/project/iptv-bfa/authentication/users', desc:'Users' },
+  { emoji:'🐙', title:'GitHub Repo', href:'https://github.com/flaviothebfagroup/IPTV-', desc:'Source' },
+  { emoji:'🌐', title:'GitHub Pages (Remote)', href:'https://flaviothebfagroup.github.io/IPTV-/remote-control.html', desc:'Open remote' }
+];
+const LINKS_DB_PATH='admin/quickLinks'; let quickLinks=[], quickLinksSource='db';
+function renderApps(){ const grid=$('#appsGrid'); grid.innerHTML=''; quickLinks.forEach((l,i)=>{ const a=document.createElement('a'); a.href=l.href; a.target='_blank'; a.rel='noopener'; a.style.cssText='display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:16px;background:var(--tile);text-decoration:none;color:inherit'; a.innerHTML=`${l.img?`<div style="width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:var(--tileA) center/cover no-repeat;background-image:url('${l.img}')"></div>`:`<div style="width:40px;height:40px;border-radius:12px;border:1px solid var(--border);display:grid;place-items:center;background:var(--tileA)">${htmlEscape(l.emoji||'🔗')}</div>`}<div style="display:flex;flex-direction:column;gap:2px"><b>${htmlEscape(l.title||'Link')}</b><span class="small muted">${htmlEscape(l.desc||'')}</span></div><button type="button" class="btn" data-remove="${i}" style="margin-left:auto;border-color:#ff6b6b;color:#ff6b6b">×</button>`; grid.appendChild(a); }); grid.querySelectorAll('button[data-remove]').forEach(btn=>btn.addEventListener('click',async e=>{ e.preventDefault(); e.stopPropagation(); const i=parseInt(btn.dataset.remove,10); quickLinks.splice(i,1); await quickLinksSave(); renderApps(); toast('Link removed'); })); }
+async function quickLinksLoadRender(){ try{ const s=await get(ref(db,LINKS_DB_PATH)); if(s.exists()){ quickLinks=Object.values(s.val()); quickLinksSource='db'; $('#qlStorageNote').textContent='Links are synced from database.'; } else throw new Error('empty'); }catch(_){ try{ quickLinks=JSON.parse(localStorage.getItem('admin_quick_links')||'[]'); if(!quickLinks.length) quickLinks=[...DEFAULT_LINKS]; quickLinksSource='local'; $('#qlStorageNote').textContent='Links are local (no DB permission).'; }catch(_){ quickLinks=[...DEFAULT_LINKS]; quickLinksSource='local'; $('#qlStorageNote').textContent='Links are local (no DB permission).'; } } renderApps(); }
+async function quickLinksSave(forceLocal=false){ if(forceLocal||quickLinksSource==='local'){ localStorage.setItem('admin_quick_links', JSON.stringify(quickLinks)); quickLinksSource='local'; $('#qlStorageNote').textContent='Links are local.'; return; } try{ const data={}; quickLinks.forEach((l,i)=>data[i]=l); await set(ref(db,LINKS_DB_PATH),data); quickLinksSource='db'; $('#qlStorageNote').textContent='Links are synced from database.'; }catch(_){ localStorage.setItem('admin_quick_links', JSON.stringify(quickLinks)); quickLinksSource='local'; $('#qlStorageNote').textContent='Links are local.'; } }
+$('#qlAddBtn').addEventListener('click', async ()=>{ const title=$('#qlTitle').value.trim(), href=$('#qlHref').value.trim(), desc=$('#qlDesc').value.trim(), emoji=$('#qlEmoji').value.trim(), img=$('#qlImg').value.trim(); if(!title||!href) return toast('Title & URL required',true); quickLinks.push({title,href,desc,emoji,img}); await quickLinksSave(); $('#qlTitle').value=$('#qlHref').value=$('#qlDesc').value=$('#qlEmoji').value=$('#qlImg').value=''; renderApps(); toast('Link added'); });
+$('#qlResetBtn').addEventListener('click', async ()=>{ quickLinks=[...DEFAULT_LINKS]; await quickLinksSave(true); renderApps(); toast('Links reset'); });
+
+/* ===== Settings + GitHub Sync ===== */
+const LS_GH='iptv_admin_gh'; const gh=JSON.parse(localStorage.getItem(LS_GH)||'{}');
+$('#settingsBtn').addEventListener('click',()=>{ $('#ghOwner').value=gh.owner||''; $('#ghRepo').value=gh.repo||''; $('#ghBranch').value=gh.branch||'main'; $('#ghPath').value=gh.path||'config/iptv-config.json'; $('#ghToken').value=gh.token||''; $('#settingsDlg').showModal(); });
+$('#saveSettingsBtn').addEventListener('click',(e)=>{ e.preventDefault(); gh.owner=$('#ghOwner').value.trim(); gh.repo=$('#ghRepo').value.trim(); gh.branch=$('#ghBranch').value.trim()||'main'; gh.path=$('#ghPath').value.trim()||'config/iptv-config.json'; gh.token=$('#ghToken').value.trim(); localStorage.setItem(LS_GH, JSON.stringify(gh)); $('#settingsDlg').close(); toast('Settings saved'); });
+function b64(str){return btoa(unescape(encodeURIComponent(str)));} async function ghFetch(url,opts){const res=await fetch(url,opts);const text=await res.text();let data;try{data=text?JSON.parse(text):{};}catch{data={raw:text};} if(!res.ok){const msg=data?.message||res.statusText||'GitHub error'; throw new Error(`${msg} (HTTP ${res.status})`);} return data;}
+async function checkRepo(gh){return ghFetch(`https://api.github.com/repos/${gh.owner}/${gh.repo}`,{headers:{'Authorization':`Bearer ${gh.token}`,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});}
+async function exportToGitHub(){
+  try{
+    const ghc=JSON.parse(localStorage.getItem(LS_GH)||'{}'); if(!ghc.owner||!ghc.repo||!ghc.branch||!ghc.path||!ghc.token) return toast('Open Settings first',true);
+    await checkRepo(ghc); const payload=await snapshot(); const contentB64=b64(JSON.stringify(payload,null,2));
+    const base=`https://api.github.com/repos/${ghc.owner}/${ghc.repo}/contents/${encodeURIComponent(ghc.path)}`;
+    const headers={'Authorization':`Bearer ${ghc.token}`,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'};
+    let sha; try{ const existing=await ghFetch(`${base}?ref=${encodeURIComponent(ghc.branch)}`,{headers}); sha=existing.sha; }catch(e){ if(!String(e.message||'').includes('404')) throw e; }
+    const body={message:sha?`update: ${ghc.path}`:`create: ${ghc.path}`,content:contentB64,branch:ghc.branch,sha};
+    await ghFetch(base,{method:'PUT',headers,body:JSON.stringify(body)}); toast('Synced to GitHub ✔︎');
+  }catch(err){ console.error(err); alert(`GitHub sync failed:\n\n${err.message}\n\nChecklist:\n• Fine-grained token with Contents: Read & write\n• Repo selected on token\n• Owner/Repo/Branch/Path exact`); toast('Sync failed',true); }
+}
+$('#syncBtn').addEventListener('click', exportToGitHub);
+</script>
+</body>
+</html>
