@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>BFA IPTV — Dealerships</title>
+<link rel="manifest" href="/IPTV-/manifest.webmanifest"/><meta name="theme-color" content="#000000"/>
+<link rel="icon" type="image/png" sizes="192x192" href="/IPTV-/icons/icon-192.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="/IPTV-/icons/icon-512.png"/><link rel="apple-touch-icon" href="/IPTV-/icons/icon-192.png"/>
+<style>
+:root{--bg:#0b0b0c;--fg:#fff;--muted:#9a9aa0;--panel:#121214;--border:rgba(255,255,255,.14);--tile:#17171a;--tileA:#1d1d21;--accent:#ff9500;--ok:#22c55e;--err:#ef4444;--shadow:0 18px 48px rgba(0,0,0,.45)}
+body.light{--bg:#f5f5f7;--fg:#111;--muted:#6e6e73;--panel:#fff;--border:rgba(0,0,0,.12);--tile:#f2f2f7;--tileA:#eaeaef;--shadow:0 14px 36px rgba(0,0,0,.10)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:linear-gradient(0deg,transparent,rgba(0,0,0,.06));backdrop-filter:blur(10px)}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--tile) center/cover no-repeat;border:1px solid var(--border)}
+a.nav{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:var(--tile);text-decoration:none;color:inherit}
+.btn{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:var(--tile);color:var(--fg);font-weight:800;cursor:pointer}
+.btn.primary{border-color:var(--accent);color:var(--accent);background:transparent}
+.btn.solid{padding:10px 14px;border-radius:12px;background:var(--accent);border:0;color:#000;font-weight:900}
+.wrap{max-width:1200px;margin:0 auto;padding:18px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.list{list-style:none;margin:10px 0 0;padding:0}.item{display:flex;justify-content:space-between;gap:12px;padding:12px;margin:8px 0;background:var(--tile);border:1px solid var(--border);border-radius:12px;flex-wrap:wrap}
+.small{font-size:12px}.muted{color:var(--muted)}.tag{padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--muted)}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 16px;border-radius:999px;font-weight:900;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}.toast.err{background:#ff453a;color:#fff}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div id="brandLogo" class="logo"></div>
+    <b>BFA IPTV — Admin</b>
+    <a class="nav" href="home.html">Home</a>
+    <a class="nav" href="dealership.html">Dealerships</a>
+    <a class="nav" href="display.html">Displays</a>
+    <a class="nav" href="user.html">Users</a>
+    <a class="nav" href="more.html">More</a>
+    <a class="nav" href="remote-control.html">Remote</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span id="adminEmail" class="muted small"></span>
+    <button id="themeBtn" class="btn">☀︎/🌙</button>
+    <button id="signOutBtn" class="btn primary">Sign out</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="loginBox" class="card" style="max-width:520px;margin:40px auto;display:none">
+    <h2 style="margin:0 0 12px">Admin Sign In</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><div class="small muted">Email</div><input id="email" class="btn" style="width:100%" type="email"/></div>
+      <div><div class="small muted">Password</div><input id="password" class="btn" style="width:100%" type="password"/></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button id="loginBtn" class="btn" style="flex:1">Sign in</button>
+      <button id="resetBtn" class="btn" style="flex:1">Reset link</button>
+    </div>
+    <div class="small muted">Needs <b>role: "admin"</b>.</div>
+  </div>
+
+  <div id="notAdmin" class="card" style="display:none;max-width:720px;margin:40px auto">
+    <h2>Not authorized</h2><div class="muted small">Ask an admin to set your role to <b>admin</b>.</div>
+  </div>
+
+  <div id="content" class="card" style="display:none">
+    <h2 style="margin:0 0 8px">Dealerships</h2>
+    <div class="small muted">Create, <b>rename ID</b> (migrates displays & users), edit public name, delete</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:12px">
+      <input id="dealerName" class="btn" style="width:100%" placeholder="e.g., Genesis Winnipeg"/>
+      <button id="addDealerBtn" class="btn solid">Add</button>
+    </div>
+    <ul id="dealerList" class="list"></ul>
+    <div class="small muted" id="dealerEmpty" style="display:none;margin-top:8px">No dealerships.</div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+import { initializeApp, deleteApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth, setPersistence, browserLocalPersistence, inMemoryPersistence, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getDatabase, ref, get, set, update, remove, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+const firebaseConfig={apiKey:"AIzaSyBLSRS9PELXoI0wRafYKG5tx_UoRSawQaY",authDomain:"iptv-bfa.firebaseapp.com",databaseURL:"https://iptv-bfa-default-rtdb.firebaseio.com",projectId:"iptv-bfa",storageBucket:"iptv-bfa.firebasestorage.app",messagingSenderId:"838790935867",appId:"1:838790935867:web:1860eac7dbeb7159e1b31e"};
+const LOGO_URL="https://flaviothebfagroup.github.io/IPTV-/icons/icon-512.png";
+const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getDatabase(app);
+const $=s=>document.querySelector(s); const $$=s=>document.querySelectorAll(s);
+function toast(m,e=false){const t=$('#toast');t.textContent=m;t.className='toast show'+(e?' err':'');setTimeout(()=>t.classList.remove('show'),2200);}
+function htmlEscape(s){return String(s).replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function makeDealerId(name){const base=(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,24);return base||('dealer_'+Date.now());}
+$('#brandLogo').style.backgroundImage=`url("${LOGO_URL}")`;
+let savedTheme=localStorage.getItem('iptv_theme'); if(!savedTheme){savedTheme='light';localStorage.setItem('iptv_theme','light');}
+document.body.classList.toggle('light', savedTheme==='light'); $('#themeBtn').addEventListener('click',()=>{const isLight=!document.body.classList.contains('light');document.body.classList.toggle('light',isLight);localStorage.setItem('iptv_theme',isLight?'light':'dark');});
+$('#signOutBtn').addEventListener('click',()=>signOut(auth));
+$('#loginBtn').addEventListener('click',async()=>{const email=$('#email').value.trim(),pass=$('#password').value;if(!email||!pass)return toast('Fill email & password',true);try{await setPersistence(auth,browserLocalPersistence);await signInWithEmailAndPassword(auth,email,pass);}catch(e){toast('Sign-in failed',true);}});
+$('#resetBtn').addEventListener('click',async()=>{const email=$('#email').value.trim();if(!email)return toast('Enter email',true);try{await sendPasswordResetEmail(auth,email);toast('Reset sent');}catch(e){toast('Reset failed',true);}});
+
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ $('#loginBox').style.display='block'; return; }
+  $('#adminEmail').textContent=user.email||user.uid;
+  const s=await get(ref(db,`user/${user.uid}`)); const u=s.val()||{}; if(u.role!=='admin'){ $('#notAdmin').style.display='block'; return; }
+  $('#loginBox').style.display='none'; $('#content').style.display='block'; refreshDealers();
+});
+
+$('#addDealerBtn').addEventListener('click', async ()=>{
+  const name=$('#dealerName').value.trim(); if(!name) return toast('Enter a name',true);
+  const id=makeDealerId(name);
+  await set(ref(db,`dealership/${id}`),{name,createdAt:Date.now(),createdBy:auth.currentUser?.email||'admin',displays:{}});
+  await set(ref(db,`dealershipPublic/${id}`),{name});
+  $('#dealerName').value=''; toast('Dealership added'); refreshDealers();
+});
+
+async function countDisplaysForDealer(did){
+  let n=0; try{ const idx=await get(ref(db,`dealership/${did}/displays`)); if(idx.exists()) n=Object.keys(idx.val()||{}).length; if(n===0){const q=query(ref(db,'displays'),orderByChild('dealership'),equalTo(did)); const s=await get(q); if(s.exists()) n=Object.keys(s.val()||{}).length;} }catch(_){}
+  return n;
+}
+
+async function migrateDealerId(oldId,newId,name){
+  if(!oldId||!newId) throw new Error('Missing'); if(oldId===newId) return;
+  const exists=await get(ref(db,`dealershipPublic/${newId}`)); if(exists.exists()) throw new Error('Target exists');
+  const pubName=name || (await get(ref(db,`dealershipPublic/${oldId}`))).val()?.name || oldId;
+  await set(ref(db,`dealershipPublic/${newId}`),{name:pubName});
+  try{ const idx=await get(ref(db,`dealership/${oldId}/displays`)); const map=idx.val()||{}; await set(ref(db,`dealership/${newId}`),{name:pubName,createdAt:Date.now(),createdBy:auth.currentUser?.email||'admin',displays:map}); }catch(_){ await set(ref(db,`dealership/${newId}`),{name:pubName,createdAt:Date.now(),createdBy:auth.currentUser?.email||'admin',displays:{}}); }
+  const q=query(ref(db,'displays'),orderByChild('dealership'),equalTo(oldId)); const ds=await get(q); const disp=ds.val()||{};
+  for(const id of Object.keys(disp)){ await update(ref(db,`displays/${id}`),{dealership:newId,timestamp:Date.now()}); }
+  const us=await get(ref(db,'user')); const users=us.val()||{};
+  for(const uid of Object.keys(users)){ if(users[uid]?.dealershipId===oldId){ await update(ref(db,`user/${uid}`),{dealershipId:newId,dealershipName:pubName,updatedAt:Date.now()}); } }
+  try{ await remove(ref(db,`dealership/${oldId}`)); }catch(_){}
+  try{ await remove(ref(db,`dealershipPublic/${oldId}`)); }catch(_){}
+}
+
+async function refreshDealers(){
+  const list=$('#dealerList'); list.innerHTML=''; let map={}; try{ const p=await get(ref(db,'dealershipPublic')); if(p.exists()) map=p.val(); }catch(_){}
+  if(!map||!Object.keys(map).length){ try{const d=await get(ref(db,'dealership')); if(d.exists()){const raw=d.val(); for(const id of Object.keys(raw)) map[id]={name:raw[id]?.name||id};}}catch(_){}
+  const ids=Object.keys(map||{}).sort(); $('#dealerEmpty').style.display=ids.length?'none':'block';
+  for(const id of ids){
+    const name=map[id]?.name||id; const count=await countDisplaysForDealer(id);
+    const li=document.createElement('li'); li.className='item';
+    li.innerHTML=`<div>
+      <b>${htmlEscape(name)}</b> <span class="tag">${htmlEscape(id)}</span> <span class="small muted">${count} TV${count===1?'':'s'}</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" data-go-d="${id}">Displays</button>
+      <button class="btn" data-go-u="${id}">Users</button>
+      <button class="btn" data-edit="${id}" data-name="${htmlEscape(name)}">Edit Name</button>
+      <button class="btn" data-rename="${id}" data-name="${htmlEscape(name)}">Rename ID</button>
+      <button class="btn" data-copyid="${id}">Copy ID</button>
+      <button class="btn primary" data-copyname="${htmlEscape(name)}">Copy Name</button>
+      <button class="btn" data-open-remote="${id}">Open Remote</button>
+      <button class="btn" data-open-analytics="${id}">Analytics</button>
+      <button class="btn" data-open-schedule="${id}">Schedule</button>
+      <button class="btn" data-open-links="${id}">Links</button>
+      <button class="btn" data-open-backups="${id}">Backups</button>
+      <button class="btn" data-open-settings="${id}">Settings</button>
+      <button class="btn" data-open-home="${id}">Home</button>
+      <button class="btn" data-open-userpage="${id}">User Page</button>
+      <button class="btn" data-open-displaypage="${id}">Display Page</button>
+      <button class="btn" data-open-dealershippage="${id}">Dealership Page</button>
+      <button class="btn" data-open-morepage="${id}">More</button>
+      <button class="btn" data-open-remote2="${id}">Remote 2</button>
+      <button class="btn" data-open-remote3="${id}">Remote 3</button>
+      <button class="btn" data-open-remote4="${id}">Remote 4</button>
+      <button class="btn" data-open-remote5="${id}">Remote 5</button>
+      <button class="btn" data-open-remote6="${id}">Remote 6</button>
+      <button class="btn" data-open-remote7="${id}">Remote 7</button>
+      <button class="btn" data-open-remote8="${id}">Remote 8</button>
+      <button class="btn" data-open-remote9="${id}">Remote 9</button>
+      <button class="btn" data-open-remote10="${id}">Remote 10</button>
+      <button class="btn" data-open-remote11="${id}">Remote 11</button>
+      <button class="btn" data-open-remote12="${id}">Remote 12</button>
+      <button class="btn" data-open-remote13="${id}">Remote 13</button>
+      <button class="btn" data-open-remote14="${id}">Remote 14</button>
+      <button class="btn" data-open-remote15="${id}">Remote 15</button>
+      <button class="btn" data-open-remote16="${id}">Remote 16</button>
+      <button class="btn" data-open-remote17="${id}">Remote 17</button>
+      <button class="btn" data-open-remote18="${id}">Remote 18</button>
+      <button class="btn" data-open-remote19="${id}">Remote 19</button>
+      <button class="btn" data-open-remote20="${id}">Remote 20</button>
+      <button class="btn" data-del="${id}" style="border-color:#ff6b6b;color:#ff6b6b">Delete</button>
+    </div>`;
+    list.appendChild(li);
+  }
+  // handlers
+  list.querySelectorAll('[data-go-d]').forEach(b=>b.addEventListener('click',()=>{ localStorage.setItem('iptv_sel_dealer', b.dataset.goD); location.href='display.html';}));
+  list.querySelectorAll('[data-go-u]').forEach(b=>b.addEventListener('click',()=>{ localStorage.setItem('iptv_sel_dealer', b.dataset.goU); location.href='user.html';}));
+  list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',async()=>{
+    const id=b.dataset.edit, cur=b.dataset.name; const next=prompt('Public name', cur||''); if(!next||next===cur) return;
+    try{ await set(ref(db,`dealershipPublic/${id}`),{name:next}); try{await update(ref(db,`dealership/${id}`),{name:next});}catch(_){}
+      toast('Name updated'); refreshDealers(); }catch(e){toast('Update failed',true);}
+  }));
+  list.querySelectorAll('[data-rename]').forEach(b=>b.addEventListener('click',async()=>{
+    const id=b.dataset.rename, cur=b.dataset.name; const next=prompt('New dealership ID (letters/numbers only):', id);
+    if(!next||next===id) return; if(!confirm(`Migrate ${id} → ${next}? Displays and users will be updated.`)) return;
+    try{ await migrateDealerId(id,next,cur); toast('Dealer ID renamed'); refreshDealers(); }catch(e){toast('Rename failed',true);}
+  }));
+  list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{
+    const id=b.dataset.del; if(!confirm(`Delete ${id}?`)) return;
+    // disallow if has displays
+    const c=await countDisplaysForDealer(id); if(c>0) return alert(`This dealership still has ${c} display(s). Remove or migrate first.`);
+    try{ await remove(ref(db,`dealership/${id}`)); await remove(ref(db,`dealershipPublic/${id}`)); toast('Deleted'); refreshDealers(); }catch(e){toast('Delete failed',true);}
+  }));
+}
+</script>
+</body>
+</html>
