@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>BFA IPTV — Home</title>
+<link rel="manifest" href="/IPTV-/manifest.webmanifest"/>
+<meta name="theme-color" content="#000000"/>
+<link rel="icon" type="image/png" sizes="192x192" href="/IPTV-/icons/icon-192.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="/IPTV-/icons/icon-512.png"/>
+<link rel="apple-touch-icon" href="/IPTV-/icons/icon-192.png"/>
+<style>
+:root{--bg:#0b0b0c;--fg:#fff;--muted:#9a9aa0;--panel:#121214;--border:rgba(255,255,255,.14);--tile:#17171a;--tileA:#1d1d21;--accent:#ff9500;--ok:#22c55e;--err:#ef4444;--shadow:0 18px 48px rgba(0,0,0,.45)}
+body.light{--bg:#f5f5f7;--fg:#111;--muted:#6e6e73;--panel:#fff;--border:rgba(0,0,0,.12);--tile:#f2f2f7;--tileA:#eaeaef;--shadow:0 14px 36px rgba(0,0,0,.10)}
+*{box-sizing:border-box}html,body{height:100%}body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;margin:0}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:linear-gradient(0deg,transparent,rgba(0,0,0,.06));backdrop-filter:blur(10px)}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--tile) center/cover no-repeat;border:1px solid var(--border)}
+.btn{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:var(--tile);color:var(--fg);font-weight:800;cursor:pointer}
+.btn.primary{border-color:var(--accent);color:var(--accent);background:transparent}
+a.nav{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:var(--tile);text-decoration:none;color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:18px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.page{display:none}.page.active{display:block}
+#homeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:980px){#homeGrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){#homeGrid{grid-template-columns:1fr}}
+.tile{display:flex;flex-direction:column;gap:8px;min-height:120px;padding:16px;border:1px solid var(--border);border-radius:20px;background:var(--tile);cursor:pointer;transition:transform .08s,border-color .2s,box-shadow .2s}
+.tile:hover{transform:translateY(-1px);border-color:var(--accent);box-shadow:0 8px 22px rgba(255,149,0,.15)}
+.tile h3{margin:0;font-size:16px}.tile p{margin:0;color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}
+@media(max-width:980px){.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--tile);border:1px solid var(--border);border-radius:12px;padding:14px}.stat b{font-size:22px}
+.bar{height:10px;background:var(--tileA);border:1px solid var(--border);border-radius:999px;overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffb866)}
+.small{font-size:12px}.muted{color:var(--muted)}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 16px;border-radius:999px;font-weight:900;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}.toast.err{background:#ff453a;color:#fff}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div id="brandLogo" class="logo"></div>
+    <b>BFA IPTV — Admin</b>
+    <a class="nav" href="home.html">Home</a>
+    <a class="nav" href="dealership.html">Dealerships</a>
+    <a class="nav" href="display.html">Displays</a>
+    <a class="nav" href="user.html">Users</a>
+    <a class="nav" href="more.html">More</a>
+    <a class="nav" href="remote-control.html">Remote</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span id="adminEmail" class="muted small"></span>
+    <button id="themeBtn" class="btn">☀︎/🌙</button>
+    <button id="reloadBtn" class="btn">Reload</button>
+    <button id="signOutBtn" class="btn primary">Sign out</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- Login -->
+  <div id="loginBox" class="card" style="max-width:520px;margin:40px auto;display:none">
+    <h2 style="margin:0 0 12px">Admin Sign In</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><div class="small muted">Email</div><input id="email" class="btn" style="width:100%" type="email" placeholder="you@company.com"/></div>
+      <div><div class="small muted">Password</div><input id="password" class="btn" style="width:100%" type="password" placeholder="••••••••"/></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button id="loginBtn" class="btn" style="flex:1">Sign in</button>
+      <button id="resetBtn" class="btn" style="flex:1">Reset link</button>
+    </div>
+    <div class="small muted">Requires <b>role: "admin"</b> in <code>/user/{uid}</code>.</div>
+  </div>
+
+  <!-- Not admin -->
+  <div id="notAdmin" class="card" style="display:none;max-width:720px;margin:40px auto">
+    <h2>Not authorized</h2>
+    <div class="muted small">Ask an admin to set your role to <b>admin</b> in the database.</div>
+  </div>
+
+  <!-- Home -->
+  <div id="content" class="page active">
+    <div class="card">
+      <h2 style="margin:0 0 10px">Quick actions</h2>
+      <div id="homeGrid">
+        <a class="tile" href="dealership.html"><h3>Dealerships</h3><p>Add • rename ID • delete</p></a>
+        <a class="tile" href="display.html"><h3>Displays</h3><p>Live list • channel • volume</p></a>
+        <a class="tile" href="user.html"><h3>Users</h3><p>Create • roles • duplicates</p></a>
+        <a class="tile" href="more.html#links"><h3>Links</h3><p>Quick access</p></a>
+        <a class="tile" href="more.html#analytics"><h3>Analytics</h3><p>Active TVs • channel mix</p></a>
+        <a class="tile" href="more.html#schedule"><h3>Schedule</h3><p>Reminders • assets</p></a>
+      </div>
+    </div>
+
+    <div class="card" id="analyticsCard" style="margin-top:12px">
+      <h2 style="margin:0 0 8px">Snapshot — right now</h2>
+      <div class="stats">
+        <div class="stat"><div class="small muted">Active TVs</div><b id="statActive">0</b></div>
+        <div class="stat"><div class="small muted">Offline</div><b id="statOffline">0</b></div>
+        <div class="stat"><div class="small muted">Top Channel</div><b id="statTopCh">—</b></div>
+        <div class="stat"><div class="small muted">Avg Volume / Muted</div><b id="statVolMuted">0 • 0%</b></div>
+      </div>
+      <h3 style="margin:10px 0 6px">Channel mix</h3>
+      <div id="anaCh"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+/* ===== CORE (shared across pages) ===== */
+import { initializeApp, deleteApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import {
+  getAuth, setPersistence, browserLocalPersistence, inMemoryPersistence,
+  signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut,
+  createUserWithEmailAndPassword
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey:"AIzaSyBLSRS9PELXoI0wRafYKG5tx_UoRSawQaY",
+  authDomain:"iptv-bfa.firebaseapp.com",
+  databaseURL:"https://iptv-bfa-default-rtdb.firebaseio.com",
+  projectId:"iptv-bfa",
+  storageBucket:"iptv-bfa.firebasestorage.app",
+  messagingSenderId:"838790935867",
+  appId:"1:838790935867:web:1860eac7dbeb7159e1b31e"
+};
+
+const LOGO_URL="https://flaviothebfagroup.github.io/IPTV-/icons/icon-512.png";
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getDatabase(app);
+const $=s=>document.querySelector(s);
+function toast(m,e=false){const t=$('#toast');t.textContent=m;t.className='toast show'+(e?' err':'');setTimeout(()=>t.classList.remove('show'),2200);}
+function htmlEscape(s){return String(s).replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function makeDealerId(name){const base=(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,24);return base||('dealer_'+Date.now());}
+
+let savedTheme=localStorage.getItem('iptv_theme'); if(!savedTheme){savedTheme='light';localStorage.setItem('iptv_theme','light');}
+document.body.classList.toggle('light', savedTheme==='light');
+$('#themeBtn').addEventListener('click',()=>{const isLight=!document.body.classList.contains('light');document.body.classList.toggle('light',isLight);localStorage.setItem('iptv_theme',isLight?'light':'dark');});
+$('#brandLogo').style.backgroundImage=`url("${LOGO_URL}")`;
+$('#reloadBtn').addEventListener('click',()=>location.reload());
+$('#signOutBtn').addEventListener('click',()=>signOut(auth));
+
+$('#loginBtn').addEventListener('click',async()=>{
+  const email=$('#email').value.trim(), pass=$('#password').value;
+  if(!email||!pass) return toast('Fill email & password',true);
+  try{ await setPersistence(auth,browserLocalPersistence); await signInWithEmailAndPassword(auth,email,pass); }catch(e){console.error(e);toast('Sign-in failed',true);}
+});
+$('#resetBtn').addEventListener('click',async()=>{
+  const email=$('#email').value.trim(); if(!email) return toast('Enter email',true);
+  try{ await sendPasswordResetEmail(auth,email); toast('Reset sent'); }catch(e){toast('Reset failed',true);}
+});
+
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ $('#loginBox').style.display='block'; $('#content').style.display='none'; return; }
+  $('#adminEmail').textContent=user.email||user.uid;
+  // admin check
+  try{
+    const s=await get(ref(db,`user/${user.uid}`)); const u=s.val()||{};
+    if(u.role!=='admin'){ $('#loginBox').style.display='none'; $('#notAdmin').style.display='block'; $('#content').style.display='none'; return; }
+  }catch(_){}
+  $('#loginBox').style.display='none'; $('#notAdmin').style.display='none'; $('#content').style.display='block';
+  loadAnalytics();
+});
+
+/* ===== Snapshot Analytics on Home ===== */
+function barRow(label,val,total){
+  const pct=total?Math.round((val/total)*100):0;
+  const row=document.createElement('div');
+  row.className='card'; row.style.margin='6px 0'; row.innerHTML=
+    `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+       <div><b>${htmlEscape(label)}</b><div class="bar"><i style="width:${pct}%"></i></div></div>
+       <div class="small muted">${val} • ${pct}%</div>
+     </div>`;
+  return row;
+}
+async function loadAnalytics(){
+  const snap=await get(ref(db,'displays')); const map=snap.val()||{}; const ids=Object.keys(map);
+  const now=Date.now(); let online=0, offline=0, volSum=0, volN=0, muted=0; const ch={};
+  ids.forEach(id=>{
+    const v=map[id]||{}; const on=(v.lastSeenAt && (now-v.lastSeenAt)<60000)||(v.timestamp&&(now-v.timestamp)<120000);
+    on?online++:offline++; const c=v.channel||1; ch[c]=(ch[c]||0)+1;
+    if(typeof v.volume==='number'){volSum+=v.volume;volN++;} if(v.muted===true) muted++;
+  });
+  const avgVol=volN?Math.round(volSum/volN):0;
+  const topCh=Object.entries(ch).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
+  const mutedPct=ids.length?Math.round((muted/ids.length)*100):0;
+  $('#statActive').textContent=online; $('#statOffline').textContent=offline; $('#statTopCh').textContent=topCh; $('#statVolMuted').textContent=`${avgVol} • ${mutedPct}%`;
+  const wrap=$('#anaCh'); wrap.innerHTML=''; const total=Object.values(ch).reduce((a,b)=>a+b,0);
+  Object.entries(ch).sort((a,b)=>a[0]-b[0]).forEach(([c,n])=>wrap.appendChild(barRow('Channel '+c,n,total)));
+}
+</script>
+</body>
+</html>
